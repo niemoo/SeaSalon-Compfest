@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Roles {
+  id    Int     @id @default(autoincrement())
+  name  String
+  users Users[]
+  Admin Admin[]
+}
+
+model Users {
+  id           Int            @id @default(autoincrement())
+  full_name    String
+  email        String
+  phone_number String
+  password     String
+  roleId       Int?
+  Roles        Roles?         @relation(fields: [roleId], references: [id])
+  reservations Reservations[]
+  Reviews      Reviews[]
+}
+
+model Admin {
+  id           Int    @id @default(autoincrement())
+  full_name    String
+  email        String
+  phone_number String
+  password     String
+  roleId       Int?
+  Roles        Roles? @relation(fields: [roleId], references: [id])
+}
+
+model Branches {
+  id           Int            @id @default(autoincrement())
+  name         String
+  location     String
+  opening_time String         @db.VarChar(5)
+  closing_time String         @db.VarChar(5)
+  reservations Reservations[]
+}
+
+model Reservations {
+  id           Int       @id @default(autoincrement())
+  name         String
+  phone_number String
+  date         DateTime  @db.Date
+  time         String    @db.VarChar(5)
+  userId       Int?
+  serviceId    Int?
+  branchId     Int?
+  Users        Users?    @relation(fields: [userId], references: [id])
+  Services     Services? @relation(fields: [serviceId], references: [id])
+  Branches     Branches? @relation(fields: [branchId], references: [id])
+}
+
+model Services {
+  id           Int            @id @default(autoincrement())
+  name         String
+  reservations Reservations[]
+}
+
+model Reviews {
+  id            Int    @id @default(autoincrement())
+  customer_name String
+  star_rating   Int
+  comment       String
+  userId        Int
+  user          Users  @relation(fields: [userId], references: [id])
+}
