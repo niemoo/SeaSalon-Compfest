@@ -21,25 +21,25 @@ model Roles {
 }
 
 model Users {
-  id           Int            @id @default(autoincrement())
+  id           String         @id @default(uuid())
   full_name    String
-  email        String
+  email        String         @unique
   phone_number String
   password     String
   roleId       Int?
-  Roles        Roles?         @relation(fields: [roleId], references: [id])
+  roles        Roles?         @relation(fields: [roleId], references: [id])
   reservations Reservations[]
-  Reviews      Reviews[]
+  reviews      Reviews[]
 }
 
 model Admin {
-  id           Int    @id @default(autoincrement())
+  id           String @id @default(uuid())
   full_name    String
-  email        String
+  email        String @unique
   phone_number String
   password     String
   roleId       Int?
-  Roles        Roles? @relation(fields: [roleId], references: [id])
+  roles        Roles? @relation(fields: [roleId], references: [id])
 }
 
 model Branches {
@@ -57,12 +57,12 @@ model Reservations {
   phone_number String
   date         DateTime  @db.Date
   time         String    @db.VarChar(5)
-  userId       Int?
+  userId       String?
   serviceId    Int?
   branchId     Int?
   Users        Users?    @relation(fields: [userId], references: [id])
-  Services     Services? @relation(fields: [serviceId], references: [id])
-  Branches     Branches? @relation(fields: [branchId], references: [id])
+  services     Services? @relation(fields: [serviceId], references: [id])
+  branches     Branches? @relation(fields: [branchId], references: [id])
 }
 
 model Services {
@@ -72,10 +72,9 @@ model Services {
 }
 
 model Reviews {
-  id            Int    @id @default(autoincrement())
-  customer_name String
-  star_rating   Int
-  comment       String
-  userId        Int
-  user          Users  @relation(fields: [userId], references: [id])
+  id          Int    @id @default(autoincrement())
+  star_rating Int
+  comment     String
+  userId      String
+  user        Users  @relation(fields: [userId], references: [id])
 }
