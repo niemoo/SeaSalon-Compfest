@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createNewReservation } from '@/actions/actions';
+import { getBranchesWithServicesApp, createNewReservation } from '@/actions/actions';
 
 interface User {
   id: string;
@@ -18,11 +18,36 @@ interface User {
   phone_number: string;
 }
 
+interface Branches {
+  id: number;
+  name: string;
+  location: string;
+  services: { id: number; name: string }[];
+  opening_time: string;
+  closing_time: string;
+}
+
 export default function ReservationForm() {
-  const [selectedService, setSelectedService] = useState<string | null>(null); // State for selected service
+  const [branches, setBranches] = useState<Branches[] | undefined>([]);
+  const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>();
   const [time, setTime] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchBranches = async () => {
+      const response = await getBranchesWithServicesApp();
+      if (response.success) {
+        console.log(response.data);
+        setBranches(response.data);
+      } else {
+        console.error(response.message);
+      }
+    };
+
+    fetchBranches();
+  }, []);
 
   const formatDate = (date: Date | undefined) => {
     if (!date) return '';
@@ -36,16 +61,14 @@ export default function ReservationForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!date || !time || !selectedService || !user) {
-      // Handle validation if necessary
+    if (!date || !time || !selectedService || !user || !selectedBranch) {
       console.log('All fields are required');
       return;
     }
 
-    // Extract userId from the user object
     const userId = user.id;
     const serviceId = parseInt(selectedService);
-    const fixedDate = formatDate(date);
+    const branchId = selectedBranch;
 
     const result = await createNewReservation({
       name: (e.currentTarget.elements.namedItem('name') as HTMLInputElement).value,
@@ -54,6 +77,7 @@ export default function ReservationForm() {
       time,
       userId,
       serviceId,
+      branchId,
     });
 
     if (result.success) {
@@ -64,33 +88,26 @@ export default function ReservationForm() {
   };
 
   useEffect(() => {
-    // Function to get the user state from sessionStorage
     const updateUser = () => {
       const storedUser = sessionStorage.getItem('user');
       if (storedUser) {
-        setUser(JSON.parse(storedUser)); // Parse JSON string into an object
+        setUser(JSON.parse(storedUser));
       } else {
         setUser(null);
       }
     };
 
-    // Initialize state
     updateUser();
 
-    // Add event listener for changes in sessionStorage
     window.addEventListener('storage', updateUser);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('storage', updateUser);
     };
   }, []);
 
   return (
-    <form
-      className="mx-auto rounded-lg grid gap-5 p-5 mt-20 border border-gray-500 shadow-xl"
-      onSubmit={handleSubmit} // Add the onSubmit handler to the form
-    >
+    <form className="mx-auto rounded-lg grid gap-5 p-5 mt-20 border border-gray-500 shadow-xl" onSubmit={handleSubmit}>
       <h3 className="text-xl font-semibold">Reservation Form</h3>
       <hr className="" />
       <div className="grid  items-center gap-1.5">
@@ -106,19 +123,44 @@ export default function ReservationForm() {
         <Input required type="text" id="phone_number" name="phone_number" placeholder="Enter Your Phone Number" />
       </div>
       <div className="grid  items-center gap-1.5">
+        <Label htmlFor="branch" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+          Branch
+        </Label>
+        <Select onValueChange={(value) => setSelectedBranch(parseInt(value))} required name="branch">
+          <SelectTrigger className="">
+            <SelectValue placeholder="Select Branch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Branches</SelectLabel>
+              {branches?.map((branch) => (
+                <SelectItem key={branch?.id} value={branch?.id.toString()}>
+                  {branch?.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid  items-center gap-1.5">
         <Label htmlFor="service" className="after:content-['*'] after:ml-0.5 after:text-red-500">
           Service Type
         </Label>
         <Select onValueChange={(value) => setSelectedService(value)} required name="service">
           <SelectTrigger className="">
-            <SelectValue placeholder="Type of Service" />
+            <SelectValue placeholder="Select Service" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Type of Service</SelectLabel>
-              <SelectItem value="1">Haircuts and Styling</SelectItem>
-              <SelectItem value="2">Manicure and Pedicure</SelectItem>
-              <SelectItem value="3">Facial Treatments</SelectItem>
+              <SelectLabel>Services</SelectLabel>
+              {selectedBranch &&
+                branches
+                  ?.find((branch) => branch.id === selectedBranch)
+                  ?.services.map((service) => (
+                    <SelectItem key={service?.id} value={service?.id.toString()}>
+                      {service?.name}
+                    </SelectItem>
+                  ))}
             </SelectGroup>
           </SelectContent>
         </Select>

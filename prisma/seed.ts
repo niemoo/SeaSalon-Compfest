@@ -31,9 +31,9 @@ async function main() {
   // Seed Services
   await prisma.services.createMany({
     data: [
-      { id: 1, name: 'Haircuts and Styling' },
-      { id: 2, name: 'Manicure and Pedicure' },
-      { id: 3, name: 'Facial Treatments' },
+      { id: 1, name: 'Haircuts and Styling', durations: 60 },
+      { id: 2, name: 'Manicure and Pedicure', durations: 60 },
+      { id: 3, name: 'Facial Treatments', durations: 60 },
     ],
     skipDuplicates: true,
   });

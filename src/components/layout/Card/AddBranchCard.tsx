@@ -33,7 +33,6 @@ export default function AddBranchCard() {
 
     if (result.success) {
       alert(result.message);
-      router.refresh();
     } else {
       alert(result.message);
     }
@@ -41,7 +40,7 @@ export default function AddBranchCard() {
 
   return (
     <Dialog>
-      <DialogTrigger className="flex items-center border border-gray-300 rounded px-3 py-2">
+      <DialogTrigger className="flex items-center border border-green-300 bg-white hover:bg-green-500 text-black hover:text-white rounded px-3 py-2">
         <IoMdAdd />
         <p>Add New Branch</p>
       </DialogTrigger>
@@ -49,6 +48,7 @@ export default function AddBranchCard() {
         <DialogHeader>
           <DialogTitle>Add New Branch</DialogTitle>
           <DialogDescription>
+            <hr className="mt-3 mb-5" />
             <form onSubmit={handleSubmit} className="grid gap-5">
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="name" className="after:content-['*'] after:ml-0.5 after:text-red-500">

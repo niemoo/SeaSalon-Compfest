@@ -128,12 +128,12 @@ export default function Navbar() {
               ) : (
                 <>
                   <li>
-                    <Link href="/login" className="py-1 px-3 rounded hover:bg-slate-200">
+                    <Link href="/login" className="py-2 px-3 rounded hover:bg-slate-200">
                       Login
                     </Link>
                   </li>
                   <li>
-                    <Link href="/register" className="py-1 px-3 rounded hover:bg-slate-200">
+                    <Link href="/register" className="py-2 px-3 rounded hover:bg-slate-200">
                       Register
                     </Link>
                   </li>

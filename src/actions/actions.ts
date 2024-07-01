@@ -44,7 +44,6 @@ export async function loginAuth(formData: FormData) {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    // Check if user is an admin
     const admin = await prisma.admin.findUnique({
       where: { email },
       select: {
@@ -67,7 +66,6 @@ export async function loginAuth(formData: FormData) {
       }
     }
 
-    // Check if user is a regular user
     const user = await prisma.users.findUnique({
       where: { email },
       select: {
@@ -100,7 +98,7 @@ export async function loginAuth(formData: FormData) {
   }
 }
 
-export async function createNewReservation({ name, phone_number, date, time, userId, serviceId }: { name: string; phone_number: string; date: Date; time: string; userId: string; serviceId: number }) {
+export async function createNewReservation({ name, phone_number, date, time, userId, serviceId, branchId }: { name: string; phone_number: string; date: Date; time: string; userId: string; serviceId: number; branchId: number }) {
   try {
     const response = await prisma.reservations.create({
       data: {
@@ -110,6 +108,7 @@ export async function createNewReservation({ name, phone_number, date, time, use
         time,
         userId,
         serviceId,
+        branchId,
       },
     });
 
@@ -133,7 +132,27 @@ export async function addNewBranch({ name, location, opening_time, closing_time 
         closing_time,
       },
     });
+
     return { success: true, data: response, message: 'New branch successfully created' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function addNewService({ name, durations }: { name: string; durations: number }) {
+  try {
+    const response = await prisma.services.create({
+      data: {
+        name,
+        durations,
+      },
+    });
+
+    return { success: true, data: response, message: 'New service successfully created' };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, message: error.message };
@@ -156,6 +175,19 @@ export async function getAllBranches() {
   }
 }
 
+export async function getAllServices() {
+  try {
+    const response = await prisma.services.findMany();
+    return { success: true, data: response, message: 'Successfully get all services data' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
 export async function getAllUsers() {
   try {
     const response = await prisma.users.findMany({
@@ -168,6 +200,89 @@ export async function getAllUsers() {
     });
 
     return { success: true, data: response, message: 'Successfully get all users data' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function addServiceToBranch({ branchId, serviceId }: { branchId: number; serviceId: number }) {
+  try {
+    const response = await prisma.branchService.create({
+      data: {
+        branchId,
+        serviceId,
+      },
+    });
+    return { success: true, data: response, message: 'Service added to branch successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function getBranchesWithServicesDashboard() {
+  try {
+    const branches = await prisma.branches.findMany({
+      include: {
+        BranchService: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    const transformedBranches = branches.map((branch) => ({
+      id: branch.id,
+      name: branch.name,
+      location: branch.location,
+      opening_time: branch.opening_time,
+      closing_time: branch.closing_time,
+      services: branch.BranchService.map((bs) => bs.service.name),
+    }));
+
+    return { success: true, data: transformedBranches, message: 'Successfully fetched branches with services' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function getBranchesWithServicesApp() {
+  try {
+    const branches = await prisma.branches.findMany({
+      include: {
+        BranchService: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    const transformedBranches = branches.map((branch) => ({
+      id: branch.id,
+      name: branch.name,
+      location: branch.location,
+      opening_time: branch.opening_time,
+      closing_time: branch.closing_time,
+      services: branch.BranchService.map((bs) => ({
+        id: bs.service.id,
+        name: bs.service.name,
+      })),
+    }));
+
+    return { success: true, data: transformedBranches, message: 'Successfully fetched branches with services' };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, message: error.message };

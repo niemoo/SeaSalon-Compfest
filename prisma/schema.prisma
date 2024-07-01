@@ -43,12 +43,13 @@ model Admin {
 }
 
 model Branches {
-  id           Int            @id @default(autoincrement())
-  name         String
-  location     String
-  opening_time String         @db.VarChar(5)
-  closing_time String         @db.VarChar(5)
-  reservations Reservations[]
+  id            Int             @id @default(autoincrement())
+  name          String
+  location      String
+  opening_time  String          @db.VarChar(5)
+  closing_time  String          @db.VarChar(5)
+  reservations  Reservations[]
+  BranchService BranchService[]
 }
 
 model Reservations {
@@ -66,9 +67,11 @@ model Reservations {
 }
 
 model Services {
-  id           Int            @id @default(autoincrement())
-  name         String
-  reservations Reservations[]
+  id            Int             @id @default(autoincrement())
+  name          String
+  durations     Int
+  reservations  Reservations[]
+  BranchService BranchService[]
 }
 
 model Reviews {
@@ -77,4 +80,13 @@ model Reviews {
   comment     String
   userId      String
   user        Users  @relation(fields: [userId], references: [id])
+}
+
+model BranchService {
+  branchId  Int
+  serviceId Int
+  branch    Branches @relation(fields: [branchId], references: [id])
+  service   Services @relation(fields: [serviceId], references: [id])
+
+  @@id([branchId, serviceId])
 }
