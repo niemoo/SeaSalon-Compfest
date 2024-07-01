@@ -28,7 +28,15 @@ async function main() {
     },
   });
 
-  console.log('Seed data inserted');
+  // Seed Services
+  await prisma.services.createMany({
+    data: [
+      { id: 1, name: 'Haircuts and Styling' },
+      { id: 2, name: 'Manicure and Pedicure' },
+      { id: 3, name: 'Facial Treatments' },
+    ],
+    skipDuplicates: true,
+  });
 }
 
 main()

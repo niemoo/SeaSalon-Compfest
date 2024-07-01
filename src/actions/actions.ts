@@ -39,18 +39,44 @@ export async function registerUser(formData: FormData) {
   }
 }
 
-export async function loginUser(formData: FormData) {
+export async function loginAuth(formData: FormData) {
   try {
-    const user = await prisma.users.findUnique({
-      where: {
-        email: formData.get('email') as string,
-      },
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    // Check if user is an admin
+    const admin = await prisma.admin.findUnique({
+      where: { email },
       select: {
         id: true,
         full_name: true,
         email: true,
         phone_number: true,
         password: true,
+        roleId: true,
+      },
+    });
+
+    if (admin) {
+      const passwordMatches = await bcrypt.compare(password, admin.password);
+      if (passwordMatches) {
+        const { password, ...adminWithoutPassword } = admin;
+        return { success: true, role: adminWithoutPassword.roleId, admin: adminWithoutPassword, message: 'Login Success as Admin' };
+      } else {
+        return { success: false, message: 'Password is wrong' };
+      }
+    }
+
+    // Check if user is a regular user
+    const user = await prisma.users.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+        password: true,
+        roleId: true,
       },
     });
 
@@ -58,15 +84,90 @@ export async function loginUser(formData: FormData) {
       return { success: false, message: 'Email not found' };
     }
 
-    const passwordMatches = await bcrypt.compare(formData.get('password') as string, user.password);
-
+    const passwordMatches = await bcrypt.compare(password, user.password);
     if (!passwordMatches) {
       return { success: false, message: 'Password is wrong' };
     }
 
-    const { password, ...userWithoutPassword } = user;
+    const { password: userPassword, ...userWithoutPassword } = user;
+    return { success: true, role: userWithoutPassword.roleId, user: userWithoutPassword, message: 'Login Success as User' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
 
-    return { success: true, user: userWithoutPassword, message: 'Login Success' };
+export async function createNewReservation({ name, phone_number, date, time, userId, serviceId }: { name: string; phone_number: string; date: Date; time: string; userId: string; serviceId: number }) {
+  try {
+    const response = await prisma.reservations.create({
+      data: {
+        name,
+        phone_number,
+        date,
+        time,
+        userId,
+        serviceId,
+      },
+    });
+
+    return { success: true, data: response, message: 'Reservation created successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function addNewBranch({ name, location, opening_time, closing_time }: { name: string; location: string; opening_time: string; closing_time: string }) {
+  try {
+    const response = await prisma.branches.create({
+      data: {
+        name,
+        location,
+        opening_time,
+        closing_time,
+      },
+    });
+    return { success: true, data: response, message: 'New branch successfully created' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function getAllBranches() {
+  try {
+    const response = await prisma.branches.findMany();
+    return { success: true, data: response, message: 'Successfully get all branches data' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function getAllUsers() {
+  try {
+    const response = await prisma.users.findMany({
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+      },
+    });
+
+    return { success: true, data: response, message: 'Successfully get all users data' };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, message: error.message };

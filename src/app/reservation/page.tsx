@@ -1,11 +1,11 @@
-import LoginForm from '@/components/layout/Form/LoginForm';
+import ReservationForm from '@/components/layout/Form/ReservationForm';
 import Navbar from '@/components/layout/Navbar';
 
-export default function Login() {
+export default function Reservation() {
   return (
     <main className="max-w-screen-sm mx-auto mt-44 md:p-0 px-5">
       <Navbar />
-      <LoginForm />
+      <ReservationForm />
     </main>
   );
 }

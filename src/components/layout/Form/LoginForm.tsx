@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { loginUser } from '@/actions/actions';
+import { loginAuth } from '@/actions/actions';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -14,14 +14,24 @@ export default function LoginForm() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const response = await loginUser(formData);
+    const response = await loginAuth(formData);
 
     if (response.success) {
-      localStorage.setItem('isLogin', 'true');
-      localStorage.setItem('user', JSON.stringify(response.user));
-      router.push('/');
+      if (response.role == 1) {
+        sessionStorage.setItem('admin', JSON.stringify(response.admin));
+        sessionStorage.setItem('role', JSON.stringify(response.role));
+        sessionStorage.setItem('isLogin', 'true');
+        window.dispatchEvent(new Event('storage'));
+        router.push('/dashboard');
+      } else if (response.role == 2) {
+        sessionStorage.setItem('user', JSON.stringify(response.user));
+        sessionStorage.setItem('role', JSON.stringify(response.role));
+        sessionStorage.setItem('isLogin', 'true');
+        window.dispatchEvent(new Event('storage'));
+        router.push('/');
+      }
     } else {
-      setMessage(response.message);
+      setMessage(response.message); // Set the error message
     }
   };
 
@@ -33,7 +43,7 @@ export default function LoginForm() {
         {message && <div className="text-red-500 text-sm mb-4">{message}</div>}
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input required type="text" id="email" name="email" placeholder="Enter Your Email" />
+          <Input required type="email" id="email" name="email" placeholder="Enter Your Email" />
         </div>
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="password">Password</Label>
