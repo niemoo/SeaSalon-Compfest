@@ -1,5 +1,6 @@
 'use server';
 
+import Review from '@/components/layout/Review';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
@@ -134,6 +135,90 @@ export async function addNewBranch({ name, location, opening_time, closing_time 
     });
 
     return { success: true, data: response, message: 'New branch successfully created' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function addReview({ star_rating, comment, userId }: { star_rating: number; comment: string; userId: string }) {
+  try {
+    const existingReview = await prisma.reviews.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    if (existingReview) {
+      const updatedReview = await prisma.reviews.update({
+        where: { userId },
+        data: {
+          star_rating,
+          comment,
+        },
+      });
+
+      return { success: true, data: updatedReview, message: `Successfully updated review for user: ${userId}` };
+    } else {
+      const newReview = await prisma.reviews.create({
+        data: {
+          star_rating,
+          comment,
+          userId,
+        },
+      });
+
+      return { success: true, data: newReview, message: `Successfully created review for user: ${userId}` };
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function getAllReview() {
+  try {
+    const reviews = await prisma.reviews.findMany({
+      include: {
+        user: {
+          select: {
+            full_name: true, // Pastikan field fullname ada di tabel Users
+          },
+        },
+      },
+    });
+
+    const formattedReviews = reviews.map((review) => ({
+      id: review.id,
+      star_rating: review.star_rating,
+      comment: review.comment,
+      user_fullname: review.user.full_name,
+    }));
+
+    return { success: true, data: formattedReviews, message: 'Successfully get all review data' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function getReviewByUserId(userId: string) {
+  try {
+    const review = await prisma.reviews.findUnique({
+      where: {
+        userId: userId,
+      },
+    });
+    return { success: true, data: review };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, message: error.message };

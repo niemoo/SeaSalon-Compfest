@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { LuUserCircle2 } from 'react-icons/lu';
 import { FiLogOut } from 'react-icons/fi';
 import { GiHairStrands } from 'react-icons/gi';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
@@ -18,6 +16,7 @@ const scrollToSection = (id: string) => {
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string | null>('');
   const router = useRouter();
   const currentPath = usePathname();
 
@@ -37,32 +36,43 @@ export default function Navbar() {
       }
     };
 
+    const updateUser = () => {
+      const storedUser = sessionStorage.getItem('user');
+      if (storedUser) {
+        const userSession = JSON.parse(storedUser);
+        setUserName(userSession.full_name ?? '');
+      }
+    };
+
     updateIsLogin();
     updateIsAdmin();
+    updateUser();
 
     window.addEventListener('storage', updateIsLogin);
     window.addEventListener('storage', updateIsAdmin);
+    window.addEventListener('storage', updateUser);
 
     return () => {
       window.removeEventListener('storage', updateIsLogin);
       window.removeEventListener('storage', updateIsAdmin);
+      window.removeEventListener('storage', updateUser);
     };
   }, [isAdmin]);
 
   const handleHomeClick = () => {
-    if (currentPath === '/') {
-      scrollToSection('home');
-    } else {
-      router.push('/');
-    }
+    scrollToSection('home');
   };
 
   const handleServiceClick = () => {
-    if (currentPath === '/') {
-      scrollToSection('service');
-    } else {
-      router.push('/');
-    }
+    scrollToSection('service');
+  };
+
+  const handleReviewsClick = () => {
+    scrollToSection('reviews');
+  };
+
+  const handleContactClick = () => {
+    scrollToSection('contacts');
   };
 
   const handleLogout = () => {
@@ -105,7 +115,7 @@ export default function Navbar() {
                 <span className="text-cyan-800">Sea</span>Salon
               </h2>
             </div>
-            <h2 className="text-xl font-semibold px-4 ml-5 border-l-2 border-gray-200">Dashboard</h2>
+            <h2 className="text-xl font-semibold px-4 ml-5 border-l-2 border-gray-200">{`${userName}`}'s Dashboard</h2>
             <ul className="flex items-center ml-auto space-x-4">
               <li>
                 <button className="px-4 py-2 text-white bg-red-500 hover:bg-red-700 rounded-lg transition duration-300 ease-in-out" onClick={handleLogout}>
@@ -126,22 +136,34 @@ export default function Navbar() {
             </div>
             <ul className="list-none items-center gap-10 md:flex hidden">
               <li>
-                <button onClick={handleHomeClick} className="py-1 px-3 rounded hover:bg-slate-200">
+                <button onClick={handleHomeClick} className="py-1 px-3 rounded text-slate-100 hover:bg-stone-800">
                   Home
                 </button>
               </li>
               <li>
-                <button onClick={handleServiceClick} className="py-1 px-3 rounded hover:bg-slate-200">
+                <button onClick={handleServiceClick} className="py-1 px-3 rounded text-slate-100 hover:bg-stone-800">
                   Service
                 </button>
               </li>
               <li>
-                <Link href="/login" className="py-2 px-3 rounded hover:bg-slate-200">
+                <button onClick={handleReviewsClick} className="py-1 px-3 rounded text-slate-100 hover:bg-stone-800">
+                  Review
+                </button>
+              </li>
+              <li>
+                <button onClick={handleContactClick} className="py-1 px-3 rounded text-slate-100 hover:bg-stone-800">
+                  Contact
+                </button>
+              </li>
+            </ul>
+            <ul className="flex gap-1">
+              <li>
+                <Link href="/login" className="py-2 px-3 rounded text-slate-100  hover:bg-stone-800">
                   Login
                 </Link>
               </li>
               <li>
-                <Link href="/register" className="py-2 px-3 rounded hover:bg-slate-200">
+                <Link href="/register" className="py-2 px-3 rounded text-slate-100 hover:bg-stone-800">
                   Register
                 </Link>
               </li>

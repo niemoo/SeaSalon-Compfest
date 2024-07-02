@@ -1,5 +1,6 @@
 import AddReservationCard from '@/components/layout/Card/AddReservationCard';
 import Navbar from '@/components/layout/Navbar';
+import Review from '@/components/layout/Review';
 import ReservationHistoryTable from '@/components/layout/Table/ReservationHistoryTable';
 
 export default function Dashboard() {
@@ -16,6 +17,10 @@ export default function Dashboard() {
         </div>
         <hr className="my-5" />
         <ReservationHistoryTable />
+        <hr className="mt-20 mb-5" />
+        <div className="flex justify-center">
+          <Review />
+        </div>
       </div>
     </main>
   );
