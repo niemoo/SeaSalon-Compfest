@@ -56,15 +56,7 @@ to
 
 This change is necessary to avoid module resolution errors during the seeding process.
 
-### 5. Seed the Database
-
-```bash
-npx ts-node prisma/seed.ts
-```
-
-This command runs the TypeScript seed script to populate the database with initial data.
-
-### 6. Start the Development Server
+### 5. Start the Development Server
 
 ```bash
 npm run dev
@@ -72,7 +64,7 @@ npm run dev
 
 This will start the SeaSalon development server.
 
-### 7. Log in as Admin
+### 6. Log in as Admin
 
 To add branches and services, log in as the admin with the following credentials:
 
@@ -81,7 +73,7 @@ To add branches and services, log in as the admin with the following credentials
 
 You can now access the admin features to manage branches and services.
 
-### 8. Log in as User
+### 7. Log in as User
 
 To access the user dashboard, you need to first register as a user and then log in. Once logged in, you can access the user dashboard where you can:
 
