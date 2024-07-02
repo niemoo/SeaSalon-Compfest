@@ -68,15 +68,7 @@ export default function AddBranchCard() {
                     Opening Time
                   </Label>
                   <div className="flex justify-center items-center">
-                    <Input
-                      required
-                      type="time"
-                      id="openingTime"
-                      name="openingTime"
-                      placeholder="Example: 08:00"
-                      onChange={handleOpeningTimeChange} // Add the onChange handler
-                      value={openingTime} // Bind the time state to the input value
-                    />
+                    <Input required type="time" id="openingTime" name="openingTime" placeholder="Example: 08:00" onChange={handleOpeningTimeChange} value={openingTime} />
                   </div>
                 </div>
                 <div className="grid w-full items-center gap-1.5">
@@ -84,15 +76,7 @@ export default function AddBranchCard() {
                     Closing Time
                   </Label>
                   <div className="flex justify-center items-center">
-                    <Input
-                      required
-                      type="time"
-                      id="closingTime"
-                      name="closingTime"
-                      placeholder="Example: 08:00"
-                      onChange={handleCloseTimeChange} // Add the onChange handler
-                      value={closeTime} // Bind the time state to the input value
-                    />
+                    <Input required type="time" id="closingTime" name="closingTime" placeholder="Example: 08:00" onChange={handleCloseTimeChange} value={closeTime} />
                   </div>
                 </div>
               </div>

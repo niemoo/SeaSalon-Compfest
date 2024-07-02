@@ -43,7 +43,7 @@ export default function RegisterForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="md:w-1/2 w-full mx-auto rounded-lg grid gap-5 p-5 mt-20 border border-gray-500 shadow-xl rounded-lg">
+      <form onSubmit={handleSubmit} className="md:w-1/2 w-full mx-auto grid gap-5 p-5 mt-20 border border-gray-500 shadow-xl rounded-lg">
         <h3 className="text-xl font-semibold">Account Register</h3>
         <hr className="" />
         <div className="grid w-full items-center gap-1.5">

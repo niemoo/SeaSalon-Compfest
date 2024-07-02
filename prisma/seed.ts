@@ -14,7 +14,7 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Seed Admin User
+  // Seed Admin
   const hashedPassword = await bcrypt.hash('Admin123', 10);
 
   await prisma.admin.create({

@@ -187,15 +187,7 @@ export default function ReservationForm() {
             Start Time
           </Label>
           <div className="flex justify-center items-center">
-            <Input
-              required
-              type="time"
-              id="time"
-              name="time"
-              placeholder="Example: 08:00"
-              onChange={handleTimeChange} // Add the onChange handler
-              value={time} // Bind the time state to the input value
-            />
+            <Input required type="time" id="time" name="time" placeholder="Example: 08:00" onChange={handleTimeChange} value={time} />
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getBranchesWithServicesDashboard } from '@/actions/actions'; // Sesuaikan dengan path fungsi prisma Anda
+import { getBranchesWithServicesDashboard } from '@/actions/actions';
 
 interface Branches {
   id: number;
@@ -31,7 +31,7 @@ export default function BranchesTable() {
   }, []);
 
   return (
-    <Table className="bg-white rounded-lg">
+    <Table className="bg-white border border-gray-400">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">Branch Id</TableHead>

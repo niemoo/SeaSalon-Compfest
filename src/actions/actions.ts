@@ -291,3 +291,32 @@ export async function getBranchesWithServicesApp() {
     }
   }
 }
+
+export async function getReservationHistory(userId: string) {
+  try {
+    const reservations = await prisma.reservations.findMany({
+      where: { userId },
+      include: {
+        branches: true,
+        services: true,
+      },
+    });
+
+    const transformedReservations = reservations.map((reservation) => ({
+      id: reservation.id,
+      branchName: reservation.branches?.name ?? 'Unknown Name',
+      branchLocation: reservation.branches?.location ?? 'Unknown Location',
+      serviceName: reservation.services?.name ?? 'Unknown Service',
+      date: reservation.date.toISOString().split('T')[0], // format date to YYYY-MM-DD
+      time: reservation.time,
+    }));
+
+    return { success: true, data: transformedReservations, message: 'Successfully fetched reservation history' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}

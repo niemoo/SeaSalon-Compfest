@@ -22,16 +22,16 @@ export default function LoginForm() {
         sessionStorage.setItem('role', JSON.stringify(response.role));
         sessionStorage.setItem('isLogin', 'true');
         window.dispatchEvent(new Event('storage'));
-        router.push('/dashboard');
+        router.push('/admin/dashboard');
       } else if (response.role == 2) {
         sessionStorage.setItem('user', JSON.stringify(response.user));
         sessionStorage.setItem('role', JSON.stringify(response.role));
         sessionStorage.setItem('isLogin', 'true');
         window.dispatchEvent(new Event('storage'));
-        router.push('/');
+        router.push('/dashboard');
       }
     } else {
-      setMessage(response.message); // Set the error message
+      setMessage(response.message);
     }
   };
 

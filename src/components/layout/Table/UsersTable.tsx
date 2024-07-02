@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getAllUsers } from '@/actions/actions';
 
 interface Users {
@@ -28,7 +28,7 @@ export default function UsersTable() {
   }, []);
 
   return (
-    <Table>
+    <Table className="bg-white border border-gray-400">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">User Id</TableHead>
