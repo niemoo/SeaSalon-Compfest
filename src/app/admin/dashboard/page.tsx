@@ -2,6 +2,7 @@ import AddBranchCard from '@/components/layout/Card/AddBranchCard';
 import AddServiceCard from '@/components/layout/Card/AddServiceCard';
 import AddServiceToBranchForm from '@/components/layout/Card/AddServiceToBranchForm';
 import Navbar from '@/components/layout/Navbar';
+import AllReservationHistoryTable from '@/components/layout/Table/AllReservationHistoryTable';
 import BranchesTable from '@/components/layout/Table/BranchesTable';
 import UsersTable from '@/components/layout/Table/UsersTable';
 
@@ -24,6 +25,14 @@ export default function AdminDashboard() {
           </div>
           <hr className="my-5" />
           <BranchesTable />
+        </div>
+        <div className="mt-10">
+          <div className="w-fit">
+            <h3 className="text-lg font-semibold">Reservations Lists</h3>
+            <hr className="border border-blue-500" />
+          </div>
+          <hr className="my-5" />
+          <AllReservationHistoryTable />
         </div>
         <div className="mt-10">
           <div className="w-fit">

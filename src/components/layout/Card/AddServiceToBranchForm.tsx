@@ -1,9 +1,10 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { getAllBranches, getAllServices, addServiceToBranch } from '@/actions/actions';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Branches {
   id: number;
@@ -23,6 +24,7 @@ const AddServiceToBranchForm = () => {
   const [services, setServices] = useState<Services[] | undefined>([]);
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [selectedService, setSelectedService] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBranchesAndServices = async () => {
@@ -49,15 +51,17 @@ const AddServiceToBranchForm = () => {
       if (response.success) {
         setSelectedBranch(null);
         setSelectedService(null);
-        alert(response.message);
+        setIsDialogOpen(false); // Close the modal
+        toast.success('Successfully Added Branch');
+        window.location.reload(); // Reload the page
       } else {
-        alert(response.message);
+        toast.error('Already Exist');
       }
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger className="flex items-center border border-blue-300 hover:bg-blue-500 hover:text-white rounded px-3 py-2">
         <IoMdAdd />
         <p>Add Branch Service</p>

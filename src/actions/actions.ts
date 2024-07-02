@@ -377,6 +377,34 @@ export async function getBranchesWithServicesApp() {
   }
 }
 
+export async function getAllReservationHistory() {
+  try {
+    const reservations = await prisma.reservations.findMany({
+      include: {
+        branches: true,
+        services: true,
+      },
+    });
+
+    const transformedReservations = reservations.map((reservation) => ({
+      id: reservation.id,
+      branchName: reservation.branches?.name ?? 'Unknown Name',
+      branchLocation: reservation.branches?.location ?? 'Unknown Location',
+      serviceName: reservation.services?.name ?? 'Unknown Service',
+      date: reservation.date.toISOString().split('T')[0],
+      time: reservation.time,
+    }));
+
+    return { success: true, data: transformedReservations, message: 'Successfully fetched reservation history' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
 export async function getReservationHistory(userId: string) {
   try {
     const reservations = await prisma.reservations.findMany({
@@ -397,6 +425,104 @@ export async function getReservationHistory(userId: string) {
     }));
 
     return { success: true, data: transformedReservations, message: 'Successfully fetched reservation history' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function updateBranch({ id, name, location, opening_time, closing_time }: { id: number; name: string; location: string; opening_time: string; closing_time: string }) {
+  try {
+    const response = await prisma.branches.update({
+      where: { id },
+      data: {
+        name,
+        location,
+        opening_time,
+        closing_time,
+      },
+    });
+
+    return { success: true, data: response, message: 'Branch updated successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function updateUser({ id, full_name, email, phone_number, password }: { id: string; full_name: string; email: string; phone_number: string; password: string }) {
+  try {
+    const response = await prisma.users.update({
+      where: { id },
+      data: {
+        full_name,
+        email,
+        phone_number,
+        ...(password && { password }),
+      },
+    });
+
+    return { success: true, data: response, message: 'User updated successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function deleteBranch(id: number) {
+  try {
+    // Hapus data dari branchService yang terkait dengan branchId
+    await prisma.branchService.deleteMany({
+      where: { branchId: id },
+    });
+
+    // Hapus data dari branches setelah branchService dihapus
+    await prisma.branches.delete({
+      where: { id },
+    });
+
+    return { success: true, message: 'Branch deleted successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function deleteReservation(id: number) {
+  try {
+    await prisma.reservations.delete({
+      where: { id },
+    });
+
+    return { success: true, message: 'Reservation deleted successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    } else {
+      return { success: false, message: 'An unknown error occurred' };
+    }
+  }
+}
+
+export async function deleteUser(id: string) {
+  try {
+    await prisma.users.delete({
+      where: { id },
+    });
+
+    return { success: true, message: 'User deleted successfully' };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, message: error.message };

@@ -24,15 +24,7 @@ npm install
 
 SeaSalon uses a MySQL database, so make sure your MySQL server is running before proceeding.
 
-### 3. Run Prisma Migrations
-
-```bash
-npx prisma migrate dev --name init
-```
-
-This command will create the initial database schema for SeaSalon.
-
-### 4. Update tsconfig.json
+### 3. Update tsconfig.json
 
 Open the `tsconfig.json` file and change the "module": "ESNext" option to "module": "CommonJS"
 
@@ -55,6 +47,14 @@ to
 ```
 
 This change is necessary to avoid module resolution errors during the seeding process.
+
+### 4. Run Prisma Migrations
+
+```bash
+npx prisma migrate dev --name init
+```
+
+This command will create the initial database schema for SeaSalon.
 
 ### 5. Start the Development Server
 

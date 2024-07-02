@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { IoMdAdd } from 'react-icons/io';
 import { addNewService } from '@/actions/actions';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function AddServiceCard() {
   const router = useRouter();
@@ -19,9 +21,10 @@ export default function AddServiceCard() {
     });
 
     if (result.success) {
-      alert(result.message);
+      toast.success(result.message);
+      window.location.reload(); // Reload the page
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 

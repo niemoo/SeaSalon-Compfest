@@ -2,16 +2,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { IoMdAdd } from 'react-icons/io';
 import { addNewBranch } from '@/actions/actions';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function AddBranchCard() {
   const router = useRouter();
   const [openingTime, setOpeningTime] = useState<string>('');
   const [closeTime, setCloseTime] = useState<string>('');
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const handleOpeningTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOpeningTime(event.target.value);
@@ -32,63 +35,72 @@ export default function AddBranchCard() {
     });
 
     if (result.success) {
-      alert(result.message);
+      toast.success('Succesfully Added');
+      setIsDialogOpen(false); // Close the modal after successful submission
+      window.location.reload(); // Reload the page after successful submission
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger className="flex items-center border border-green-300 bg-white hover:bg-green-500 text-black hover:text-white rounded px-3 py-2">
-        <IoMdAdd />
-        <p>Add New Branch</p>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Branch</DialogTitle>
-          <DialogDescription>
-            <hr className="mt-3 mb-5" />
-            <form onSubmit={handleSubmit} className="grid gap-5">
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="name" className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                  Branch Name
-                </Label>
-                <Input type="text" id="name" name="name" placeholder="Enter Branch Name" required />
-              </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="location" className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                  Branch Location
-                </Label>
-                <Input type="text" id="location" name="location" placeholder="Enter Branch Location" required />
-              </div>
-              <div className="flex gap-5">
+    <>
+      <ToastContainer />
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger className="flex items-center border border-green-300 bg-white hover:bg-green-500 text-black hover:text-white rounded px-3 py-2">
+          <IoMdAdd />
+          <p>Add New Branch</p>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Branch</DialogTitle>
+            <DialogDescription>
+              <hr className="mt-3 mb-5" />
+              <form onSubmit={handleSubmit} className="grid gap-5">
                 <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="openingTime" className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                    Opening Time
+                  <Label htmlFor="name" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                    Branch Name
                   </Label>
-                  <div className="flex justify-center items-center">
-                    <Input required type="time" id="openingTime" name="openingTime" placeholder="Example: 08:00" onChange={handleOpeningTimeChange} value={openingTime} />
-                  </div>
+                  <Input type="text" id="name" name="name" placeholder="Enter Branch Name" required />
                 </div>
                 <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="closingTime" className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                    Closing Time
+                  <Label htmlFor="location" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                    Branch Location
                   </Label>
-                  <div className="flex justify-center items-center">
-                    <Input required type="time" id="closingTime" name="closingTime" placeholder="Example: 08:00" onChange={handleCloseTimeChange} value={closeTime} />
+                  <Input type="text" id="location" name="location" placeholder="Enter Branch Location" required />
+                </div>
+                <div className="flex gap-5">
+                  <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="openingTime" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                      Opening Time
+                    </Label>
+                    <div className="flex justify-center items-center">
+                      <Input required type="time" id="openingTime" name="openingTime" placeholder="Example: 08:00" onChange={handleOpeningTimeChange} value={openingTime} />
+                    </div>
+                  </div>
+                  <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="closingTime" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                      Closing Time
+                    </Label>
+                    <div className="flex justify-center items-center">
+                      <Input required type="time" id="closingTime" name="closingTime" placeholder="Example: 08:00" onChange={handleCloseTimeChange} value={closeTime} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                  Add Branch
-                </button>
-              </div>
-            </form>
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+                <div className="flex justify-end">
+                  <DialogFooter className="sm:justify-start">
+                    <DialogClose asChild>
+                      <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                        Add Branch
+                      </button>
+                    </DialogClose>
+                  </DialogFooter>
+                </div>
+              </form>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
